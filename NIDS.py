@@ -16,11 +16,19 @@ feature_cols = ['srcip','sport','dstip','dsport','proto','state','dur','sbytes',
 
 def main():
     traffic = pd.read_csv("traffic_set.csv",names=field_cols, skiprows=1)
+
+    # Normalize the data and labels
     traffic.replace(to_replace=r'^\s*$', value=0, inplace=True, regex=True)
+    traffic.attack_cat.fillna(value=' ', inplace=True)
     traffic.fillna(value=0, inplace=True)
     traffic_features = traffic[feature_cols]
-    label = traffic.Label
+    traffic.attack_cat = traffic.attack_cat.str.strip()
+    traffic.attack_cat.replace(to_replace="Backdoors", value="Backdoor", inplace=True)
+    attack_cat_encoder = preprocessing.LabelEncoder()
+    attack_cat_encoder.fit(traffic.attack_cat)
+
     attack_cat = traffic.attack_cat
+    label = traffic.Label
 
     # Categorical fields that need encoding
     traffic_features.srcip, _ = pd.factorize(traffic_features.srcip)
@@ -31,13 +39,22 @@ def main():
     traffic_features.state, _ = pd.factorize(traffic_features.state)
     traffic_features.service, _ = pd.factorize(traffic_features.service)
 
-    X_train, X_test, y_train, y_test = train_test_split(traffic_features,label, test_size=0.3)
+    # Label Test
+    X_train, X_test, y_train, y_test = train_test_split(traffic_features, label, test_size=0.3)
 
     clf = DecisionTreeClassifier(criterion="entropy")
     clf.fit(X_train, y_train)
     
     y_pred = clf.predict(X_test)
-    print("Accuracy: {:.2f}%\n".format(metrics.accuracy_score(y_test, y_pred)*100))
+    print("Attack label accuracy: {:.2f}%\n".format(metrics.accuracy_score(y_test, y_pred)*100))
+
+    # Attack Cat Test
+    features_train, features_test, cat_train,cat_test = train_test_split(traffic_features, attack_cat, test_size=0.3)
+    clf = DecisionTreeClassifier(criterion="entropy")
+    clf.fit(features_train, cat_train)
+    
+    y_pred = clf.predict(features_test)
+    print("Attack category accuracy: {:.2f}%\n".format(metrics.accuracy_score(cat_test, y_pred)*100))
 
     return 0
 
