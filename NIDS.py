@@ -15,22 +15,23 @@ field_cols = ['srcip','sport','dstip','dsport','proto','state','dur','sbytes','d
 feature_cols = ['srcip','sport','dstip','dsport','proto','state','dur','sbytes','dbytes','sttl','dttl','sloss','dloss','service','Sload','Dload','Spkts','Dpkts','swin','dwin','stcpb','dtcpb','smeansz','dmeansz','trans_depth','res_bdy_len','Sjit','Djit','Stime','Ltime','Sintpkt','Dintpkt','tcprtt','synack','ackdat','is_sm_ips_ports','ct_state_ttl','ct_flw_http_mthd','is_ftp_login','ct_ftp_cmd','ct_srv_src','ct_srv_dst','ct_dst_ltm','ct_src_ ltm','ct_src_dport_ltm','ct_dst_sport_ltm','ct_dst_src_ltm']
 
 def main():
-    traffic = pd.read_csv("traffic_set.csv",names=field_cols)
-    traffic.head()
+    traffic = pd.read_csv("traffic_set.csv",names=field_cols, skiprows=1)
+    traffic.replace(to_replace=r'^\s*$', value=0, inplace=True, regex=True)
+    traffic.fillna(value=0, inplace=True)
     traffic_features = traffic[feature_cols]
     label = traffic.Label
     attack_cat = traffic.attack_cat
 
     # Categorical fields that need encoding
-    srcip = None
-    dstip = None
-    proto = None
+    traffic_features.srcip, _ = pd.factorize(traffic_features.srcip)
+    traffic_features.sport, _ = pd.factorize(traffic_features.sport)
+    traffic_features.dstip, _ = pd.factorize(traffic_features.dstip)
+    traffic_features.dsport, _ = pd.factorize(traffic_features.dsport)
+    traffic_features.proto, _ = pd.factorize(traffic_features.proto)
+    traffic_features.state, _ = pd.factorize(traffic_features.state)
+    traffic_features.service, _ = pd.factorize(traffic_features.service)
 
     X_train, X_test, y_train, y_test = train_test_split(traffic_features,label, test_size=0.3)
-
-    le = preprocessing.LabelEncoder()
-    le.fit()
-
 
     clf = DecisionTreeClassifier(criterion="entropy")
     clf.fit(X_train, y_train)
