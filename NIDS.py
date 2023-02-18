@@ -19,7 +19,7 @@ def main():
 
     # Normalize the data and labels
     traffic.replace(to_replace=r'^\s*$', value=0, inplace=True, regex=True)
-    traffic.attack_cat.fillna(value=' ', inplace=True)
+    traffic.attack_cat.fillna(value='None', inplace=True)
     traffic.fillna(value=0, inplace=True)
     traffic_features = traffic[feature_cols]
     traffic.attack_cat = traffic.attack_cat.str.strip()
