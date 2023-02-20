@@ -31,9 +31,8 @@ def main():
                     description = 'This program trains a model with a given training set and classifier')
     parser.add_argument('train_filename', help="Path to CSV file containing training data.")
     parser.add_argument('method', choices=['dtc', 'lr'], help="The classification method to use for testing against the dataset.")
-    parser.add_argument('model_name', help="Optional path to pickled, pre-trained model to load and use for test.")
+    parser.add_argument('model_name', help="Name of saved pickle next to this script.")
     parser.add_argument('-fs', choices=['on', 'off'], default="on" ,dest="feature_selection_toggle", help="Optionally turn off feature selection to use all features in dataset.")
-
     args = parser.parse_args()
 
     traffic = pd.read_csv("traffic_train.csv",names=field_cols, skiprows=1)
@@ -135,7 +134,6 @@ def main():
         joblib.dump(scaler, 'scaler_model.pkl')
         
         return
-
 
     return 0
 

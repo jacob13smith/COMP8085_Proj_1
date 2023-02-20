@@ -29,7 +29,7 @@ def main():
     parser.add_argument('test_filename', help="Path to CSV file containing test data.")
     parser.add_argument('method', choices=['dtc','lr'], help="The classification method to use for testing the against the dataset.")
     parser.add_argument('task', choices=['Label', 'attack_cat'], help="The label to be predicted by the model.")
-    parser.add_argument('model_name', help="Optional path to pickled, pre-trained model to load and use for test.")
+    parser.add_argument('model_name', help="Path to pickled, pre-trained model to load and use for test.")
     parser.add_argument('-fs', choices=['on', 'off'], default="on" ,dest="feature_selection_toggle", help="Optionally turn off feature selection to use all features in dataset.")
     args = parser.parse_args()
 
