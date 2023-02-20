@@ -42,7 +42,6 @@ def main():
     traffic.replace(to_replace=r'^\s*$', value=0, inplace=True, regex=True)
     traffic.attack_cat.fillna(value='None', inplace=True)
     traffic.fillna(value=0, inplace=True)
-    traffic = traffic[traffic['is_ftp_login'].isin([0, 1])]
     traffic_features = traffic[feature_cols]
     traffic.attack_cat = traffic.attack_cat.str.strip()
     traffic.attack_cat.replace(to_replace="Backdoors", value="Backdoor", inplace=True)
@@ -87,7 +86,7 @@ def main():
         # Train the Logistic Regression model
         lr = LogisticRegression()
         # Define the parameter grid to search over
-        param_grid = {'C': [0.01], 'penalty': ['l2']}
+        param_grid = {'C': [10], 'penalty': ['l2']}
 
         # Scaler
         scaler = StandardScaler()
